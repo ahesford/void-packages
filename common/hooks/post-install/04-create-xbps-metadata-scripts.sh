@@ -326,8 +326,7 @@ _EOF
 				if ! [[ $j =~ pre-${action} ]]; then
 					continue
 				fi
-				printf "\t\${TRIGGERSDIR}/$f run $j \${PKGNAME} \${VERSION} \${UPDATE} \${CONF_FILE}\n" >> $tmpf
-				printf "\t[ \$? -ne 0 ] && exit \$?\n" >> $tmpf
+				printf "\t\${TRIGGERSDIR}/$f run $j \"\${PKGNAME}\" \"\${VERSION}\" \"\${UPDATE}\" \"\${CONF_FILE}\" || exit\n" >> $tmpf
 			done
 		done
 		printf "\t;;\n" >> $tmpf
@@ -338,8 +337,7 @@ _EOF
 				if ! [[ $j =~ post-${action} ]]; then
 					continue
 				fi
-				printf "\t\${TRIGGERSDIR}/$f run $j \${PKGNAME} \${VERSION} \${UPDATE} \${CONF_FILE}\n" >> $tmpf
-				printf "\t[ \$? -ne 0 ] && exit \$?\n" >> $tmpf
+				printf "\t\${TRIGGERSDIR}/$f run $j \"\${PKGNAME}\" \"\${VERSION}\" \"\${UPDATE}\" \"\${CONF_FILE}\" || exit\n" >> $tmpf
 			done
 		done
 		printf "\t;;\n" >> $tmpf
