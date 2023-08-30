@@ -1,0 +1,130 @@
+pre-patch so that PR #36110 applies cleanly on top of 10.1
+
+diff --git a/src/sage/misc/cachefunc.pyx b/src/sage/misc/cachefunc.pyx
+index 9b2916e547d..d9eb6fbbbba 100644
+--- a/src/sage/misc/cachefunc.pyx
++++ b/src/sage/misc/cachefunc.pyx
+@@ -46,15 +46,16 @@ the name that the wrapped method or function should have,
+ since otherwise the name of the original function would
+ be used::
+ 
+-    sage: cython('''cpdef test_funct(x): return -x''')                          # optional - sage.misc.cython
+-    sage: wrapped_funct = cached_function(test_funct, name='wrapped_funct')     # optional - sage.misc.cython
+-    sage: wrapped_funct                                                         # optional - sage.misc.cython
++    sage: # needs sage.misc.cython
++    sage: cython('''cpdef test_funct(x): return -x''')
++    sage: wrapped_funct = cached_function(test_funct, name='wrapped_funct')
++    sage: wrapped_funct
+     Cached version of <built-in function test_funct>
+-    sage: wrapped_funct.__name__                                                # optional - sage.misc.cython
++    sage: wrapped_funct.__name__
+     'wrapped_funct'
+-    sage: wrapped_funct(5)                                                      # optional - sage.misc.cython
++    sage: wrapped_funct(5)
+     -5
+-    sage: wrapped_funct(5) is wrapped_funct(5)                                  # optional - sage.misc.cython
++    sage: wrapped_funct(5) is wrapped_funct(5)
+     True
+ 
+ We can proceed similarly for cached methods of Cython classes,
+@@ -66,6 +67,7 @@ example. By :trac:`12951`, cached methods of extension classes can
+ be defined by simply using the decorator. However, an indirect
+ approach is still needed for cpdef methods::
+ 
++    sage: # needs sage.misc.cython
+     sage: cython_code = ['cpdef test_meth(self,x):',
+     ....: '    "some doc for a wrapped cython method"',
+     ....: '    return -x',
+@@ -77,21 +79,21 @@ approach is still needed for cpdef methods::
+     ....: '        "Some doc for direct method"',
+     ....: '        return 2*x',
+     ....: '    wrapped_method = cached_method(test_meth,name="wrapped_method")']
+-    sage: cython(os.linesep.join(cython_code))                                  # optional - sage.misc.cython
+-    sage: O = MyClass()                                                         # optional - sage.misc.cython
+-    sage: O.direct_method                                                       # optional - sage.misc.cython
++    sage: cython(os.linesep.join(cython_code))
++    sage: O = MyClass()
++    sage: O.direct_method
+     Cached version of <method 'direct_method' of '...MyClass' objects>
+-    sage: O.wrapped_method                                                      # optional - sage.misc.cython
++    sage: O.wrapped_method
+     Cached version of <built-in function test_meth>
+-    sage: O.wrapped_method.__name__                                             # optional - sage.misc.cython
++    sage: O.wrapped_method.__name__
+     'wrapped_method'
+-    sage: O.wrapped_method(5)                                                   # optional - sage.misc.cython
++    sage: O.wrapped_method(5)
+     -5
+-    sage: O.wrapped_method(5) is O.wrapped_method(5)                            # optional - sage.misc.cython
++    sage: O.wrapped_method(5) is O.wrapped_method(5)
+     True
+-    sage: O.direct_method(5)                                                    # optional - sage.misc.cython
++    sage: O.direct_method(5)
+     10
+-    sage: O.direct_method(5) is O.direct_method(5)                              # optional - sage.misc.cython
++    sage: O.direct_method(5) is O.direct_method(5)
+     True
+ 
+ In some cases, one would only want to keep the result in cache as long
+@@ -248,21 +250,22 @@ it is empty for the other as well::
+ 
+ Introspection works::
+ 
++    sage: # needs sage.misc.cython
+     sage: from sage.misc.edit_module import file_and_line
+     sage: from sage.misc.sageinspect import sage_getdoc, sage_getfile, sage_getsource
+-    sage: print(sage_getdoc(test_pfunc))                                        # optional - sage.misc.cython
++    sage: print(sage_getdoc(test_pfunc))
+        Some documentation
+-    sage: print(sage_getdoc(O.wrapped_method))                                  # optional - sage.misc.cython
++    sage: print(sage_getdoc(O.wrapped_method))
+     some doc for a wrapped cython method
+     <BLANKLINE>
+-    sage: print(sage_getdoc(O.direct_method))                                   # optional - sage.misc.cython
++    sage: print(sage_getdoc(O.direct_method))
+     Some doc for direct method
+     <BLANKLINE>
+-    sage: print(sage_getsource(O.wrapped_method))                               # optional - sage.misc.cython
++    sage: print(sage_getsource(O.wrapped_method))
+     cpdef test_meth(self,x):
+         "some doc for a wrapped cython method"
+         return -x
+-    sage: print(sage_getsource(O.direct_method))                                # optional - sage.misc.cython
++    sage: print(sage_getsource(O.direct_method))
+     def direct_method(self, x):
+         "Some doc for direct method"
+         return 2*x
+diff --git a/src/sage/misc/lazy_import.pyx b/src/sage/misc/lazy_import.pyx
+index 3de82a88eaf..fc6a3ac90e9 100644
+--- a/src/sage/misc/lazy_import.pyx
++++ b/src/sage/misc/lazy_import.pyx
+@@ -1089,8 +1089,9 @@ def lazy_import(module, names, as_=None, *,
+     An example of an import relying on a feature::
+ 
+         sage: from sage.features import PythonModule
+-        sage: lazy_import('ppl', 'equation', feature=PythonModule('ppl', spkg='pplpy', type='standard'))
+-        sage: equation
++        sage: lazy_import('ppl', 'equation',
++        ....:             feature=PythonModule('ppl', spkg='pplpy', type='standard'))
++        sage: equation                                                                  # needs pplpy
+         <built-in function equation>
+         sage: lazy_import('PyNormaliz', 'NmzListConeProperties', feature=PythonModule('PyNormaliz', spkg='pynormaliz'))  # optional - pynormaliz
+         sage: NmzListConeProperties  # optional - pynormaliz
+diff --git a/src/sage/modules/free_module_element.pyx b/src/sage/modules/free_module_element.pyx
+index f813b37cf70..e529d703401 100644
+--- a/src/sage/modules/free_module_element.pyx
++++ b/src/sage/modules/free_module_element.pyx
+@@ -1610,10 +1610,10 @@ cdef class FreeModuleElement(Vector):   # abstract base class
+ 
+         EXAMPLES::
+ 
+-            sage: v = vector([1,2/3,pi])
+-            sage: v.items()
++            sage: v = vector([1,2/3,pi])                                                # needs sage.symbolic
++            sage: v.items()                                                             # needs sage.symbolic
+             <generator object at ...>
+-            sage: list(v.items())
++            sage: list(v.items())                                                       # needs sage.symbolic
+             [(0, 1), (1, 2/3), (2, pi)]
+ 
+         TESTS:
