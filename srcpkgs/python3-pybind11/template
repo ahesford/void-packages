@@ -1,7 +1,7 @@
 # Template file for 'python3-pybind11'
 pkgname=python3-pybind11
 version=2.11.1
-revision=1
+revision=2
 build_style=python3-module
 hostmakedepends="cmake python3-setuptools
  python3-pytest python3-sphinx_rtd_theme python3-breathe"
@@ -43,6 +43,15 @@ do_check() {
 
 post_install() {
 	vlicense LICENSE
+
+	# symlink headers, cmake and pkgconfig into /usr
+	vmkdir usr/include
+	vmkdir usr/lib/cmake
+	vmkdir usr/lib/pkgconfig
+	_pybind11=${DESTDIR}/${py3_sitelib}/pybind11
+	ln -rs $_pybind11/include/pybind11 ${DESTDIR}/usr/include/
+	ln -rs $_pybind11/share/cmake/pybind11 ${DESTDIR}/usr/lib/cmake/
+	ln -rs $_pybind11/share/pkgconfig/pybind11.pc ${DESTDIR}/usr/lib/pkgconfig/
 
 	# Copy the man page, but make it section 7
 	_manpage=docs/.build/man/pybind11.1
