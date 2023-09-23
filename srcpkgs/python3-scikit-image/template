@@ -20,15 +20,6 @@ checksum=53a82a9dbd3ed608d2ad3876269a271a7e922b12e228388eac996b508aadd652
 # Tests require data files and unpackaged dependencies
 make_check=no
 
-pre_build() {
-	if [ "${CROSS_BUILD}" ]; then
-		# Meson can't tolerate $CC with arguments as set by build helper
-		CC="${XBPS_CROSS_TRIPLET}-gcc"
-		# CXX needs to know where to find Python headers
-		CXXFLAGS+=" -I${XBPS_CROSS_BASE}/${py3_inc}"
-	fi
-}
-
 post_install() {
 	vlicense LICENSE.txt
 }
