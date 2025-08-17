@@ -2,22 +2,22 @@
 # XXX: ensure all compiled rofi plugins work with each version
 # xlocate 'usr/lib/rofi/.*.so' to find them
 pkgname=rofi
-version=1.7.9.1
+version=2.0.0.beta1
 revision=1
 build_style=meson
-hostmakedepends="flex glib-devel pkg-config"
+hostmakedepends="flex glib-devel pkg-config wayland-devel"
 makedepends="libXinerama-devel librsvg-devel libxkbcommon-devel
  pango-devel startup-notification-devel xcb-util-keysyms-devel
- xcb-util-wm-devel xcb-util-xrm-devel xcb-util-cursor-devel"
+ xcb-util-wm-devel xcb-util-xrm-devel xcb-util-cursor-devel
+ wayland-devel wayland-protocols"
 checkdepends="check-devel"
 short_desc="Window switcher, run dialog and dmenu replacement"
 maintainer="classabbyamp <void@placeviolette.net>"
 license="MIT"
 homepage="https://github.com/davatorium/rofi"
 changelog="https://github.com/davatorium/rofi/releases"
-# XXX: remove %.1 next release
-distfiles="https://github.com/davatorium/rofi/releases/download/${version%.1}/rofi-${version}.tar.xz"
-checksum=04c128f8c56f043cd229545285ee773322d0eafaffad100b8604338108c5f5ec
+distfiles="https://github.com/davatorium/rofi/releases/download/${version/.beta/-beta}/rofi-${version/.beta/-beta}.tar.xz"
+checksum=1109201a629b1b1c09a9b388a0e71610258759faf33506f00ce8146da89ac290
 
 if [ "$XBPS_CHECK_PKGS" ]; then
 	configure_args+=" -Dcheck=enabled"
