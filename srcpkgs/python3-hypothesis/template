@@ -1,7 +1,7 @@
 # Template file for 'python3-hypothesis'
 pkgname=python3-hypothesis
 version=6.147.0
-revision=1
+revision=2
 build_wrksrc=hypothesis-python
 build_style=python3-pep517
 # disable tests requiring unpackaged dependencies or installed entrypoints
