@@ -1,7 +1,7 @@
 # Template file for 'python3-modern_colorthief'
 pkgname=python3-modern_colorthief
 version=0.1.7
-revision=1
+revision=2
 build_helper=rust
 build_style=python3-pep517
 hostmakedepends="maturin cargo"
