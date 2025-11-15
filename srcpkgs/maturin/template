@@ -1,7 +1,7 @@
 # Template file for 'maturin'
 pkgname=maturin
 version=1.9.6
-revision=1
+revision=2
 build_style=python3-pep517
 build_helper="qemu rust"
 hostmakedepends="python3-setuptools-rust python3-tomli python3-wheel cargo pkg-config"
